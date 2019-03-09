@@ -3,6 +3,7 @@ package ch.uifz725.beintime.activity;
 import android.Manifest;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -23,6 +24,7 @@ import ch.uifz725.beintime.model.CreateDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
+    // global variable for the database
     CreateDatabase db;
 
     @Override
@@ -30,11 +32,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Creates the Database
         db = Room.databaseBuilder(getApplicationContext(),
                 CreateDatabase.class, "InTimeDB").allowMainThreadQueries().build();
 
         final Double myLongitude;
 
+        // Block to get Permission to Access_FINE_LOCATION
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -59,6 +63,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Permission has already been granted
         }
+
+
+        // END BLOCK PERMISSION
+
+
+
+        // Change Activity
+        Button registerLocationBtn = findViewById(R.id.locationBtn);
+        registerLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, AddLocationActivity.class));
+                System.out.print("CHANGED");
+
+
+            }
+        });
+
+
+
+
+
 
 
         // Acquire a reference to the system Location Manager
@@ -104,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         db.actionDao().insertAction(action1);
 
         // Database tester Querry
+        /*
         Button locationBtn = findViewById(R.id.locationBtn);
         locationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+*/
 /*
         AsyncTask.execute(new Runnable() {
             @Override
