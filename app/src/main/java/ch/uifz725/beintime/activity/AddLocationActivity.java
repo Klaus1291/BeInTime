@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -17,16 +18,20 @@ import java.util.List;
 
 import ch.uifz725.beintime.R;
 import ch.uifz725.beintime.model.CreateDatabase;
+import ch.uifz725.beintime.model.Location;
 
 public class AddLocationActivity extends AppCompatActivity {
     CreateDatabase db;
     LatLng myplace;
+    Location location = new Location();
 
-    String name;
-    String adresse;
-    String city;
-    String longitudeStr;
-    String latitudeStr;
+    TextView nameInput;
+    TextView streetInput;
+    TextView cityInput;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +40,20 @@ public class AddLocationActivity extends AppCompatActivity {
 
         db = Room.databaseBuilder(getApplicationContext(),
                 CreateDatabase.class, "InTimeDB").allowMainThreadQueries().build();
+        nameInput = findViewById(R.id.nameInput);
+        streetInput = findViewById(R.id.streetInput);
+        cityInput = findViewById(R.id.cityInput);
 
-        myplace = getLocationFromAddress(this, "Hauptstrasse 70");
 
         Button saveBtn = findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                myplace = getLocationFromAddress(AddLocationActivity.this, "Hauptstrasse");
+
+                System.out.println(streetInput);
+
                 System.out.println(myplace.latitude);
                 System.out.println(myplace.longitude);
             }
@@ -55,7 +67,6 @@ public class AddLocationActivity extends AppCompatActivity {
 
 
     }
-
 
 
     public LatLng getLocationFromAddress(Context context, String strAddress) {
@@ -80,11 +91,6 @@ public class AddLocationActivity extends AppCompatActivity {
             Toast myToast = Toast.makeText(this, "Ort nicht Gefunden", Toast.LENGTH_LONG);
             myToast.show();
         }
-
         return p1;
     }
-
-
-
-
 }

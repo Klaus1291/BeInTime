@@ -10,7 +10,67 @@ public class Location {
     private int id;
 
     private String name;
-    private Float radius;
-    private String information;
-    private String position;
+    private String adresse;
+    private String city;
+    private String comment;
+    private String longitudeStr;
+    private String latitudeStr;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getLongitudeStr() {
+        return longitudeStr;
+    }
+
+    public void setLongitudeStr(String longitudeStr) {
+        this.longitudeStr = longitudeStr;
+    }
+
+    public String getLatitudeStr() {
+        return latitudeStr;
+    }
+
+    public void setLatitudeStr(String latitudeStr) {
+        this.latitudeStr = latitudeStr;
+    }
+
 }
