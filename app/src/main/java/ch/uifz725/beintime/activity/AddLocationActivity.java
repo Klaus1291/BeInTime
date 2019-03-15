@@ -43,6 +43,11 @@ public class AddLocationActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.nameInput);
         streetInput = findViewById(R.id.streetInput);
         cityInput = findViewById(R.id.cityInput);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
 
         Button saveBtn = findViewById(R.id.saveBtn);
@@ -50,20 +55,18 @@ public class AddLocationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                myplace = getLocationFromAddress(AddLocationActivity.this, "Hauptstrasse");
 
-                System.out.println(streetInput);
+                location.setAdresse(streetInput.getText().toString());
+                location.setCity(cityInput.getText().toString());
+
+                myplace = getLocationFromAddress(AddLocationActivity.this, location.getAdresse() + location.getCity());
+
+                System.out.println(streetInput.getText());
 
                 System.out.println(myplace.latitude);
                 System.out.println(myplace.longitude);
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
 
 
     }
