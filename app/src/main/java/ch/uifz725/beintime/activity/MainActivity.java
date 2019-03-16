@@ -2,8 +2,10 @@ package ch.uifz725.beintime.activity;
 
 import android.Manifest;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,9 +14,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.TextView;
+
+import com.google.android.gms.dynamic.IFragmentWrapper;
 
 import java.util.List;
 
@@ -32,13 +38,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         // Creates the Database
         db = Room.databaseBuilder(getApplicationContext(),
-                CreateDatabase.class, "InTimeDB").allowMainThreadQueries().build();
+                CreateDatabase.class, "InTimeDB").allowMainThreadQueries().fallbackToDestructiveMigration().build();
 
         final Double myLongitude;
 
+        // DONT TOUCH
+        //////////////////////////////////////////////////////
         // Block to get Permission to Access_FINE_LOCATION
+        //////////////////////////////////////////////////////
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -63,46 +74,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Permission has already been granted
         }
+        ///////////////////////////////
+        // END BLOCK PERMISSION ///////
+        ///////////////////////////////
 
 
-        // END BLOCK PERMISSION
-
-
-
-        // Change Activity
+        // Change Activity and Layout
         Button registerLocationBtn = findViewById(R.id.locationBtn);
         registerLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, AddLocationActivity.class));
-                System.out.print("CHANGED");
-
-
             }
         });
 
-
-
-
-
-
-
         // Acquire a reference to the system Location Manager
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
-        final LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-                //makeUseOfNewLocation(location);
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location locationNow) {
 
-                //TextView longitudeTxt = findViewById(R.id.longitudeTxt);
-
-                //longitudeTxt.setText(Double.toString(location.getLatitude()));
-
-
-                System.out.println(location.getLatitude());
+                handleNewLocation(locationNow);
 
             }
 
@@ -111,64 +104,55 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderEnabled(String provider) {}
 
             public void onProviderDisabled(String provider) {}
+
+            public void handleNewLocation(Location locationNow) {
+
+
+                Chronometer myChronometer = findViewById(R.id.chronometer);
+
+                List<ch.uifz725.beintime.model.Location> locations = db.locationDao().getAllLocation();
+
+                for (ch.uifz725.beintime.model.Location location: locations ){
+
+                    TextView nametxt = findViewById(R.id.nametxt);
+
+
+
+                    if (Double.parseDouble(location.getLatitudeStr()) + 10 > locationNow.getLatitude() && Double.parseDouble(location.getLatitudeStr()) - 10 < locationNow.getLatitude() &&
+                            Double.parseDouble(location.getLongitudeStr()) + 10 > locationNow.getLongitude() && Double.parseDouble(location.getLongitudeStr()) - 10 < locationNow.getLongitude()
+                    ){
+                        nametxt.setText(location.getName() + ": ");
+                        myChronometer.start();
+
+                    } else {
+
+                        myChronometer.stop();
+                        nametxt.setText("");
+
+                        //Action myAction = new Action();
+
+                        //db.actionDao().insertAction(myAction);
+
+
+                    }
+
+                    Log.d("stored longitude", location.getLongitudeStr());
+                    Log.d("stored latitude", location.getLatitudeStr());
+                    Log.d("NOW longitude", Double.toString(locationNow.getLongitude()));
+                    Log.d("NOW latitude", Double.toString(locationNow.getLatitude()));
+
+
+                }
+
+
+
+            }
         };
 
+
+
         // Register the listener with the Location Manager to receive location updates
-
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-
-
-
-
-
-
-        // Database insert Tester
-        Action action1 = new Action();
-        action1.setDecsription("Rundgang");
-        action1.setStart("start");
-        action1.setEnd("end");
-        db.actionDao().insertAction(action1);
-
-        // Database tester Querry
-        /*
-        Button locationBtn = findViewById(R.id.locationBtn);
-        locationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<Action> allActions = db.actionDao().getAllActions();
-
-                String tester = allActions.get(0).getDecsription();
-
-                //TextView myView = findViewById(R.id.textView);
-                //myView.setText(tester);
-
-
-
-                System.out.println();
-
-
-            }
-        });
-*/
-/*
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                Action action1 = new Action();
-
-                action1.setDecsription("Rundgang");
-                action1.setStart("start");
-                action1.setEnd("end");
-
-
-                db.actionDao().insertAction(action1);
-
-
-            }
-        });
-*/
-
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 10, locationListener);
 
     }
 

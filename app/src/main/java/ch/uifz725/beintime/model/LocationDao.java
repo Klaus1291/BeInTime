@@ -7,12 +7,12 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 @Dao
-public interface ActionDao {
+public interface LocationDao {
 
     @Insert
-    void insertAction(Action action);
+    void insertLocation (Location location);
 
-    @Query("Select * FROM `Action`")
-    List<Action> getAllActions();
+    @Query("Select * FROM `Location`")
+    List<Location> getAllLocation();
 
 }

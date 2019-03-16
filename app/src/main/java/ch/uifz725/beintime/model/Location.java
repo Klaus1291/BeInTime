@@ -12,7 +12,6 @@ public class Location {
     private String name;
     private String adresse;
     private String city;
-    private String comment;
     private String longitudeStr;
     private String latitudeStr;
 
@@ -47,14 +46,6 @@ public class Location {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public String getLongitudeStr() {
